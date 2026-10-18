@@ -17,6 +17,10 @@ radioCirculo = 0
 arrastrando = False
 
 def cargarVideo (ruta):
+    """Lee las imágenes de un vídeo.
+    Recibe: ruta, nombre o ruta del vídeo.
+    Devuelve: lista de imágenes o None si no se puede leer.
+    """
     global fps, size
     videoCapture = cv2.VideoCapture(ruta)
     fps = videoCapture.get(cv2.CAP_PROP_FPS)
@@ -33,6 +37,10 @@ def cargarVideo (ruta):
     return lista
 
 def diferenciaFrames(frame1, frame2):
+    """Compara dos imágenes.
+    Recibe: frame1 y frame2, imágenes que se comparan.
+    Devuelve: un número que indica cuánto cambian.
+    """
     gris1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
     gris2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
     
@@ -46,30 +54,55 @@ def diferenciaFrames(frame1, frame2):
     return total / contador 
 
 def saltarFrames(frames, actual):
+    """Busca la siguiente imagen que cambie bastante.
+    Recibe: frames, lista de imágenes; actual, posición de la imagen actual.
+    Devuelve: posición de la imagen encontrada o de la última si no hay cambios.
+    """
     for i in range(actual + 1, len(frames)): 
         if diferenciaFrames(frames[actual], frames[i]) > UMBRAL_DIFERENCIA: 
             return i 
     return len(frames) - 1 
 
 def regionesDelFrame(numFrame):
+    """Busca las zonas que se aplican a una imagen.
+    Recibe: numFrame, número de la imagen.
+    Devuelve: lista de zonas, vacía si no hay ninguna.
+    """
     for frame in range(numFrame, -1, -1):
         if frame in selecciones:
             return selecciones[frame]
     return []
 
 def distancia(p1, p2):
+    """Calcula la distancia entre dos puntos.
+    Recibe: p1 y p2, puntos con posición (x, y).
+    Devuelve: distancia en píxeles, sin decimales.
+    """
     return int(((p2[0] - p1[0]) ** 2 + (p2[1] - p1[1]) ** 2) ** 0.5)
  
 def dentroCirculo(region, x, y):
+    """Comprueba si un punto está dentro de un círculo o en su borde.
+    Recibe: region, centro y punto del borde; x e y, posición que se comprueba.
+    Devuelve: True si está dentro o en el borde; False si está fuera.
+    """
     cx, cy = region[0]
     return (x - cx) ** 2 + (y - cy) ** 2 <= distancia(region[0], region[1]) ** 2
 
 def guardarRegion(region):
+    """Añade una zona a las marcas de la imagen actual.
+    Recibe: region, lista de puntos de la zona.
+    Devuelve: None.
+    """
     if frameActual not in selecciones:
         selecciones[frameActual] = []
     selecciones[frameActual].append(region)
     
 def clic(event, x, y, flags, param):
+    """Recoge los movimientos y clics del ratón para dibujar zonas.
+    Recibe: event, acción del ratón; x e y, posición del ratón.
+    También recibe flags, estado de teclas y botones, y param, datos extra; no se usan.
+    Devuelve: None.
+    """
     global puntos, centroCirculo, radioCirculo, arrastrando
  
     # MODO CÍRCULO: pulsar = centro, arrastrar = radio, soltar = guardar
@@ -99,6 +132,11 @@ def clic(event, x, y, flags, param):
             puntos = []
 
 def dibujarPuntos(img, puntos, color, cerrar):
+    """Dibuja los puntos y la forma sobre una imagen.
+    Recibe: img, imagen que se modifica; puntos, posiciones de la forma.
+    También recibe color, valores de azul, verde y rojo, y cerrar, si la forma está completa.
+    Devuelve: None.
+    """
     if cerrar and len(puntos) == 2:
         cv2.circle(img, puntos[0], distancia(puntos[0], puntos[1]), color, 2)
         cv2.circle(img, puntos[0], 4, (0, 0, 255), -1)
@@ -112,7 +150,10 @@ def dibujarPuntos(img, puntos, color, cerrar):
         cv2.line(img, puntos[ultimo], puntos[0], color, 2)      
 
 def mostrarFrame(frames):
-   
+    """Muestra la imagen actual con sus marcas.
+    Recibe: frames, lista de imágenes del vídeo.
+    Devuelve: None.
+    """
     vista = cv2.cvtColor(frames[frameActual], cv2.COLOR_BGR2RGB)
     vista = cv2.cvtColor(vista, cv2.COLOR_RGB2BGR)
     if frameActual in selecciones:
@@ -143,6 +184,10 @@ def mostrarFrame(frames):
     cv2.imshow("Practica 1", vista)
 
 def borrarUltimoPunto():
+    """Quita el último punto o deshace la última zona de la imagen actual.
+    Recibe: ningún parámetro.
+    Devuelve: None.
+    """
     global puntos
     if len(puntos) > 0:
         puntos.pop()
@@ -154,7 +199,10 @@ def borrarUltimoPunto():
             del selecciones[frameActual]
 
 def etiquetarVideo(frames):
-   
+    """Permite marcar zonas con el ratón y usar las teclas de control.
+    Recibe: frames, lista de imágenes del vídeo.
+    Devuelve: None.
+    """
     global frameActual, puntos, numPuntos, modoCirculo, arrastrando
     cv2.namedWindow("Practica 1")
     cv2.setMouseCallback("Practica 1", clic)
@@ -212,6 +260,10 @@ def etiquetarVideo(frames):
     cv2.destroyWindow("Practica 1")
  
 def guardarVideo(frames, ruta):
+    """Guarda el vídeo con las zonas dibujadas.
+    Recibe: frames, lista de imágenes; ruta, nombre o ruta del archivo de salida.
+    Devuelve: None.
+    """
     videoWriter = cv2.VideoWriter(ruta, cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), fps, size)
     regionesActuales = []                          
     for i in range(len(frames)):
@@ -224,6 +276,10 @@ def guardarVideo(frames, ruta):
     print("Video guardado:", ruta)
     
 def rectangulo(region):
+    """Calcula el rectángulo que rodea una zona.
+    Recibe: region, lista de puntos de la zona.
+    Devuelve: x e y de la esquina superior izquierda y de la inferior derecha.
+    """
     if len(region) == 2:
         cx, cy = region[0]
         r = distancia(region[0], region[1])
@@ -236,6 +292,10 @@ def rectangulo(region):
     return min(listaX), min(listaY), max(listaX), max(listaY)
 
 def contarRegiones():
+    """Cuenta el mayor número de zonas marcadas en una misma imagen.
+    Recibe: ningún parámetro.
+    Devuelve: ese número de zonas, o 0 si no hay ninguna.
+    """
     total = 0
     for frame in selecciones:
        if len(selecciones[frame]) > total:
@@ -243,6 +303,10 @@ def contarRegiones():
     return total
  
 def tamanoRegion(numRegion):
+    """Busca el ancho y alto máximos de una zona a lo largo del vídeo.
+    Recibe: numRegion, posición de la zona en la lista (empieza en 0).
+    Devuelve: ancho y alto máximos, en píxeles.
+    """
     listaAltos = []
     listaAnchos = []
     for frame in selecciones:
@@ -255,6 +319,10 @@ def tamanoRegion(numRegion):
     return max(listaAnchos), max(listaAltos)
        
 def guardarVideoRegiones(frames, numRegion):
+    """Guarda un vídeo con el recorte de una zona.
+    Recibe: frames, lista de imágenes; numRegion, posición de la zona (empieza en 0).
+    Devuelve: None.
+    """
     ruta = "Region - " + str(numRegion + 1) + ".avi"
     ancho, alto = tamanoRegion(numRegion)
     videoWriter = cv2.VideoWriter(ruta, cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), fps, (ancho, alto))
@@ -289,10 +357,18 @@ def guardarVideoRegiones(frames, numRegion):
     print("Video guardado:", ruta)
     
 def guardarTodasRegiones(frames):
+    """Guarda un vídeo por cada zona marcada.
+    Recibe: frames, lista de imágenes del vídeo.
+    Devuelve: None.
+    """
     for numRegion in range(contarRegiones()):
         guardarVideoRegiones(frames, numRegion)
 
 def guardarVideoOculto(frames, ruta):
+    """Guarda el vídeo con las zonas tapadas en negro.
+    Recibe: frames, lista de imágenes; ruta, nombre o ruta del archivo de salida.
+    Devuelve: None.
+    """
     videoWriter = cv2.VideoWriter(ruta, cv2.VideoWriter_fourcc('X', 'V', 'I', 'D'), fps, size)
     regionesActuales = []
     for i in range(len(frames)):
@@ -310,6 +386,10 @@ def guardarVideoOculto(frames, ruta):
     videoWriter.release()
     
 def main():
+    """Abre el vídeo, permite marcar las zonas y guarda los resultados.
+    Recibe: ningún parámetro.
+    Devuelve: None.
+    """
     frames = cargarVideo(VIDEO_RUTA_ENTRADA)
     if frames is not None:
         etiquetarVideo(frames)
