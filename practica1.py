@@ -105,7 +105,6 @@ def clic(event, x, y, flags, param):
     """
     global puntos, centroCirculo, radioCirculo, arrastrando
  
-    # MODO CÍRCULO: pulsar = centro, arrastrar = radio, soltar = guardar
     if modoCirculo:
         if event == cv2.EVENT_LBUTTONDOWN:
             centroCirculo = (x, y)

@@ -10,7 +10,7 @@
 
 | Tecla | Forma | Cómo dibujarla |
 | --- | --- | --- |
-| `r` | Rectángulo | Haz clic en una esquina y después en la de enfrente. |
+| `r` | Rectángulo | Haz clic en una esquina y después en la esquina opuesta en diagonal |
 | `t` | Triángulo | Marca 3 puntos alrededor de la zona, en orden. |
 | `f` | Forma de 4 lados (la que aparece al empezar) | Marca 4 puntos alrededor de la zona, en orden. |
 | `p` | Forma de 5 lados | Marca 5 puntos alrededor de la zona, en orden. |
