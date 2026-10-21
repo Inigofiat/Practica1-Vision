@@ -26,9 +26,9 @@ Cada clic añade un punto. La forma se guarda al terminar de dibujarla. Si cambi
 | `d` | Pasar a la siguiente imagen del vídeo. |
 | `a` | Volver a la imagen anterior. |
 | `s` | Saltar hasta que la imagen cambie bastante. |
-| `Ctrl + Z` | Quitar el último punto. Si no hay puntos a medio dibujar, deshacer la última zona dibujada en esta imagen. |
+| `Ctrl + Z` | Quitar el último punto. Si no hay puntos a medio dibujar, reabre la última zona para corregirla (los rectángulos y círculos se borran enteros). |
 | `x` | Borrar la última zona dibujada en esta imagen. |
-| `c` | Borrar todas las marcas de esta imagen. |
+| `c` | Borrar todas las marcas de esta imagen. Las siguientes quedan sin marcas hasta volver a dibujar. |
 | `q` | Terminar y guardar los vídeos. |
 
 Las marcas verdes son de esta imagen. Las amarillas vienen de una imagen anterior.
